@@ -19,6 +19,7 @@ import { PlanTier } from './types';
 import { BillingSettings } from './pages/Dashboard/BillingSettings';
 import { WhatsAppConnector } from './pages/Dashboard/WhatsAppConnector';
 import { SocialIntegrations } from './pages/Dashboard/SocialIntegrations';
+import { Audience } from './pages/Dashboard/Audience';
 
 // Admin Pages
 import { AdminDashboard } from './pages/Admin/AdminDashboard';
@@ -94,7 +95,7 @@ const App: React.FC = () => {
           <Route index element={<DashboardOverview />} />
           <Route path="campaigns" element={<Campaigns />} />
           <Route path="campaigns/:id" element={<CampaignDetails />} />
-          <Route path="audience" element={<Placeholder title="Audience Management" />} />
+          <Route path="audience" element={<Audience />} />
           <Route path="whatsapp" element={<WhatsAppConnector />} />
           <Route path="integrations" element={<SocialIntegrations />} />
           <Route path="automation" element={<Placeholder title="Automation Builder" />} />
