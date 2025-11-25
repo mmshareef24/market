@@ -22,9 +22,10 @@ import { PlanTier } from '../types';
 interface DashboardLayoutProps {
   onLogout: () => void;
   plan: PlanTier;
+  setPlan: (plan: PlanTier) => void;
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan }) => {
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan, setPlan }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -160,7 +161,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan
 
         <div className="p-4 lg:p-8 max-w-7xl mx-auto">
           {/* Pass plan context to child routes */}
-          <Outlet context={{ plan }} />
+          <Outlet context={{ plan, setPlan }} />
         </div>
       </main>
     </div>

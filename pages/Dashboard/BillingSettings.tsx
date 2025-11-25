@@ -1,4 +1,5 @@
 import React from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { Crown, Zap, Check, ArrowRight } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { PlanTier } from '../../types';
@@ -9,17 +10,29 @@ interface BillingSettingsProps {
 }
 
 export const BillingSettings: React.FC<BillingSettingsProps> = ({ plan }) => {
+  const { setPlan } = useOutletContext<{ setPlan: (p: PlanTier) => void }>();
   const isStarter = plan === 'Starter';
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Billing & Plan</h1>
-        <Link to={`/pricing?from=billing`}>
-          <Button variant={isStarter ? 'primary' : 'outline'}>
-            {isStarter ? 'Upgrade Plan' : 'View Plans'} <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </Link>
+        {isStarter ? (
+          <div className="flex gap-2">
+            <Link to={`/pricing?from=billing`}>
+              <Button variant={'outline'}>
+                View Plans <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+            <Button onClick={() => { localStorage.setItem('mb_plan', 'Growth'); setPlan('Growth'); }}>Activate Upgrade</Button>
+          </div>
+        ) : (
+          <Link to={`/pricing?from=billing`}>
+            <Button variant={'outline'}>
+              Manage Plan <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
+        )}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -83,13 +96,15 @@ export const BillingSettings: React.FC<BillingSettingsProps> = ({ plan }) => {
               <h3 className="text-lg font-semibold">Unlock Growth features</h3>
               <p className="text-sm text-slate-600 dark:text-slate-300">Enable WhatsApp, multi-channel campaigns, and advanced automation.</p>
             </div>
-            <Link to="/pricing?plan=Growth&from=billing">
-              <Button>Upgrade to Growth</Button>
-            </Link>
+            <div className="flex gap-2">
+              <Link to="/pricing?plan=Growth&from=billing">
+                <Button variant="outline">See Growth</Button>
+              </Link>
+              <Button onClick={() => { localStorage.setItem('mb_plan', 'Growth'); setPlan('Growth'); }}>Activate Upgrade</Button>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 };
-

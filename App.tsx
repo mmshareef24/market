@@ -19,7 +19,6 @@ import { PlanTier } from './types';
 import { BillingSettings } from './pages/Dashboard/BillingSettings';
 import { WhatsAppConnector } from './pages/Dashboard/WhatsAppConnector';
 import { SocialIntegrations } from './pages/Dashboard/SocialIntegrations';
-import { BillingSettings } from './pages/Dashboard/BillingSettings';
 
 // Admin Pages
 import { AdminDashboard } from './pages/Admin/AdminDashboard';
@@ -37,7 +36,10 @@ const Placeholder: React.FC<{title: string}> = ({title}) => (
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<'USER' | 'ADMIN' | null>(null);
-  const [userPlan, setUserPlan] = useState<PlanTier>('Starter');
+  const [userPlan, setUserPlan] = useState<PlanTier>(() => {
+    const stored = localStorage.getItem('mb_plan');
+    return (stored as PlanTier) || 'Starter';
+  });
 
   const handleLogin = (role: 'USER' | 'ADMIN' = 'USER', plan: PlanTier = 'Starter') => {
     setIsAuthenticated(true);
@@ -50,6 +52,18 @@ const App: React.FC = () => {
     setUserRole(null);
     setUserPlan('Starter');
   };
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem('mb_plan');
+    if (stored && stored !== userPlan) setUserPlan(stored as PlanTier);
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'mb_plan' && e.newValue && e.newValue !== userPlan) {
+        setUserPlan(e.newValue as PlanTier);
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [userPlan]);
 
   return (
     <HashRouter>
@@ -75,7 +89,7 @@ const App: React.FC = () => {
         {/* Protected Dashboard Routes (User) */}
         <Route 
           path="/dashboard" 
-          element={isAuthenticated && userRole === 'USER' ? <DashboardLayout onLogout={handleLogout} plan={userPlan} /> : <Navigate to="/auth" />}
+          element={isAuthenticated && userRole === 'USER' ? <DashboardLayout onLogout={handleLogout} plan={userPlan} setPlan={(p) => { setUserPlan(p); localStorage.setItem('mb_plan', p); }} /> : <Navigate to="/auth" />}
         >
           <Route index element={<DashboardOverview />} />
           <Route path="campaigns" element={<Campaigns />} />
