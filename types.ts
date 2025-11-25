@@ -77,3 +77,12 @@ export enum Theme {
   LIGHT = 'light',
   DARK = 'dark'
 }
+
+export interface Contact {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  tags?: string[];
+  createdAt?: string;
+}

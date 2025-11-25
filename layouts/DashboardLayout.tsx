@@ -32,6 +32,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan
   const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { label: 'Campaigns', icon: Megaphone, path: '/dashboard/campaigns' },
+    { label: 'Contacts', icon: Users, path: '/dashboard/contacts' },
     { label: 'Audience', icon: Users, path: '/dashboard/audience' },
     { label: 'WhatsApp', icon: MessageCircle, path: '/dashboard/whatsapp' },
     { label: 'Integrations', icon: Share2, path: '/dashboard/integrations' },
