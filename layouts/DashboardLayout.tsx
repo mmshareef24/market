@@ -22,9 +22,10 @@ import { PlanTier } from '../types';
 interface DashboardLayoutProps {
   onLogout: () => void;
   plan: PlanTier;
+  setPlan: (plan: PlanTier) => void;
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan }) => {
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan, setPlan }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -110,9 +111,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan
                     {plan === 'Starter' ? '850 / 1,000 contacts' : '15,000 / 25,000 contacts'}
                 </p>
                 {plan === 'Starter' && (
-                  <button className="mt-3 w-full py-1.5 bg-white text-slate-900 text-xs font-bold rounded shadow-sm hover:bg-slate-100 transition-colors">
-                    Upgrade to Growth
-                  </button>
+                  <a href="#/pricing?from=sidebar" className="block mt-3 w-full">
+                    <button className="w-full py-1.5 bg-white text-slate-900 text-xs font-bold rounded shadow-sm hover:bg-slate-100 transition-colors">
+                      Upgrade to Growth
+                    </button>
+                  </a>
                 )}
               </div>
            )}
@@ -158,7 +161,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan
 
         <div className="p-4 lg:p-8 max-w-7xl mx-auto">
           {/* Pass plan context to child routes */}
-          <Outlet context={{ plan }} />
+          <Outlet context={{ plan, setPlan }} />
         </div>
       </main>
     </div>

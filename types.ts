@@ -19,6 +19,7 @@ export interface User {
 
 export interface DashboardContext {
   plan: PlanTier;
+  setPlan: (plan: PlanTier) => void;
 }
 
 export interface CampaignMetrics {
