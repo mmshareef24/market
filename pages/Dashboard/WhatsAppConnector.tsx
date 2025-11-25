@@ -21,6 +21,7 @@ export const WhatsAppConnector: React.FC = () => {
   const [templateLang, setTemplateLang] = useState('en_US');
   const [templateVars, setTemplateVars] = useState<string[]>(['', '']);
   const [serverAvailable, setServerAvailable] = useState<boolean | null>(null);
+  const [apiBase, setApiBase] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +34,9 @@ export const WhatsAppConnector: React.FC = () => {
     setWebhookUrl(wh);
     setVerifyToken(vt);
     if (plan === 'Starter') setShowUpgrade(true);
-    fetch('/api/health').then(r => setServerAvailable(r.ok)).catch(() => setServerAvailable(false));
+    fetch('/api/health')
+      .then(r => { setServerAvailable(r.ok); if (r.ok) setApiBase(''); })
+      .catch(() => { setServerAvailable(false); setApiBase('http://localhost:3001'); });
   }, [plan]);
 
   const saveSettings = () => {
@@ -62,7 +65,7 @@ export const WhatsAppConnector: React.FC = () => {
       let res: Response;
       if (mode === 'text') {
         if (!apiToken) {
-          res = await fetch(`/api/whatsapp/send`, {
+          res = await fetch(`${apiBase}/api/whatsapp/send`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phoneNumberId, to: testTo, text: testMessage })
@@ -84,7 +87,7 @@ export const WhatsAppConnector: React.FC = () => {
         }
       } else {
         if (!apiToken) {
-          res = await fetch(`/api/whatsapp/sendTemplate`, {
+          res = await fetch(`${apiBase}/api/whatsapp/sendTemplate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phoneNumberId, to: testTo, name: templateName, languageCode: templateLang, variables: templateVars.filter(v => v) })

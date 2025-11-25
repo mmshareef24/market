@@ -54,10 +54,17 @@ export const CampaignDetails: React.FC = () => {
   const [graphTesting, setGraphTesting] = useState(false);
   const [graphResult, setGraphResult] = useState<string | null>(null);
   const [graphError, setGraphError] = useState<string | null>(null);
+  const [apiBase, setApiBase] = useState('');
 
   const isStarter = plan === 'Starter';
-  const whatsappPhoneId = typeof window !== 'undefined' ? (sessionStorage.getItem('mb_whatsapp_phone') || '') : '';
+  const whatsappPhoneId = typeof window !== 'undefined' ? (localStorage.getItem('mb_whatsapp_phone') || sessionStorage.getItem('mb_whatsapp_phone') || '') : '';
   const socialConfigs = typeof window !== 'undefined' ? (sessionStorage.getItem('mb_social_configs') || '') : '';
+
+  useEffect(() => {
+    fetch('/api/health')
+      .then(r => { if (r.ok) setApiBase(''); else setApiBase('http://localhost:3001'); })
+      .catch(() => setApiBase('http://localhost:3001'));
+  }, []);
 
   const handleWaSend = async () => {
     setWaSending(true);
@@ -68,7 +75,7 @@ export const CampaignDetails: React.FC = () => {
         setWaError('Fill phone ID in WhatsApp Connector, recipient, and message');
         return;
       }
-      const res = await fetch('/api/whatsapp/send', {
+      const res = await fetch(`${apiBase}/api/whatsapp/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phoneNumberId: whatsappPhoneId, to: waRecipient, text: waMessage })
@@ -92,7 +99,7 @@ export const CampaignDetails: React.FC = () => {
     setGraphResult(null);
     setGraphError(null);
     try {
-      const res = await fetch('/api/graph/me', { method: 'POST' });
+      const res = await fetch(`${apiBase}/api/graph/me`, { method: 'POST' });
       const body = await res.json();
       if (!res.ok) {
         setGraphError(typeof body === 'string' ? body : body?.error || 'Test failed');
