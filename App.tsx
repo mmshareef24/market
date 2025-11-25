@@ -16,6 +16,7 @@ import { DashboardOverview } from './pages/Dashboard/DashboardOverview';
 import { Campaigns } from './pages/Dashboard/Campaigns';
 import { CampaignDetails } from './pages/Dashboard/CampaignDetails';
 import { PlanTier } from './types';
+import { BillingSettings } from './pages/Dashboard/BillingSettings';
 
 // Admin Pages
 import { AdminDashboard } from './pages/Admin/AdminDashboard';
@@ -80,7 +81,7 @@ const App: React.FC = () => {
           <Route path="whatsapp" element={<Placeholder title="WhatsApp API Connector" />} />
           <Route path="integrations" element={<Placeholder title="Social Integrations" />} />
           <Route path="automation" element={<Placeholder title="Automation Builder" />} />
-          <Route path="settings" element={<Placeholder title="Settings" />} />
+          <Route path="settings" element={<BillingSettings plan={userPlan} />} />
         </Route>
 
         {/* Protected Admin Routes */}
