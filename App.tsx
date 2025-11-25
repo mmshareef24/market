@@ -16,10 +16,10 @@ import { DashboardOverview } from './pages/Dashboard/DashboardOverview';
 import { Campaigns } from './pages/Dashboard/Campaigns';
 import { CampaignDetails } from './pages/Dashboard/CampaignDetails';
 import { PlanTier } from './types';
-import { BillingSettings } from './pages/Dashboard/BillingSettings';
 import { WhatsAppConnector } from './pages/Dashboard/WhatsAppConnector';
 import { SocialIntegrations } from './pages/Dashboard/SocialIntegrations';
 import { Audience } from './pages/Dashboard/Audience';
+import { AutomationBuilder } from './pages/Dashboard/AutomationBuilder';
 
 // Admin Pages
 import { AdminDashboard } from './pages/Admin/AdminDashboard';
@@ -98,7 +98,7 @@ const App: React.FC = () => {
           <Route path="audience" element={<Audience />} />
           <Route path="whatsapp" element={<WhatsAppConnector />} />
           <Route path="integrations" element={<SocialIntegrations />} />
-          <Route path="automation" element={<Placeholder title="Automation Builder" />} />
+          <Route path="automation" element={<AutomationBuilder />} />
           <Route path="settings" element={<BillingSettings plan={userPlan} />} />
         </Route>
 
