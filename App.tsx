@@ -18,6 +18,7 @@ import { CampaignDetails } from './pages/Dashboard/CampaignDetails';
 import { PlanTier } from './types';
 import { BillingSettings } from './pages/Dashboard/BillingSettings';
 import { WhatsAppConnector } from './pages/Dashboard/WhatsAppConnector';
+import { SocialIntegrations } from './pages/Dashboard/SocialIntegrations';
 import { BillingSettings } from './pages/Dashboard/BillingSettings';
 
 // Admin Pages
@@ -81,7 +82,7 @@ const App: React.FC = () => {
           <Route path="campaigns/:id" element={<CampaignDetails />} />
           <Route path="audience" element={<Placeholder title="Audience Management" />} />
           <Route path="whatsapp" element={<WhatsAppConnector />} />
-          <Route path="integrations" element={<Placeholder title="Social Integrations" />} />
+          <Route path="integrations" element={<SocialIntegrations />} />
           <Route path="automation" element={<Placeholder title="Automation Builder" />} />
           <Route path="settings" element={<BillingSettings plan={userPlan} />} />
         </Route>
