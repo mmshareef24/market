@@ -19,6 +19,7 @@ export interface User {
 
 export interface DashboardContext {
   plan: PlanTier;
+  setPlan: (plan: PlanTier) => void;
 }
 
 export interface CampaignMetrics {
@@ -75,4 +76,13 @@ export interface Channel {
 export enum Theme {
   LIGHT = 'light',
   DARK = 'dark'
+}
+
+export interface Contact {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  tags?: string[];
+  createdAt?: string;
 }

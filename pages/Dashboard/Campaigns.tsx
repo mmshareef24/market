@@ -71,8 +71,9 @@ export const Campaigns: React.FC = () => {
     };
 
     const handleWizardComplete = (data: CampaignFormData) => {
-        // Find selected audience name for display
-        const selectedAudience = mockAudiences.find(a => a.id === data.audienceId);
+        const saved = typeof window !== 'undefined' ? localStorage.getItem('mb_audiences') : null;
+        const audiences = saved ? JSON.parse(saved) : mockAudiences;
+        const selectedAudience = audiences.find((a: any) => a.id === data.audienceId);
         
         const payload: Campaign = {
             id: `cmp_${Date.now()}`,

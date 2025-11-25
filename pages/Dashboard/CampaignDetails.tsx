@@ -46,8 +46,72 @@ export const CampaignDetails: React.FC = () => {
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [originalCampaign, setOriginalCampaign] = useState<Campaign | null>(null);
   const [showUpgrade, setShowUpgrade] = useState<{show: boolean, feature: string}>({ show: false, feature: '' });
+  const [waRecipient, setWaRecipient] = useState('');
+  const [waMessage, setWaMessage] = useState('Test message from Campaign Details');
+  const [waSending, setWaSending] = useState(false);
+  const [waResult, setWaResult] = useState<string | null>(null);
+  const [waError, setWaError] = useState<string | null>(null);
+  const [graphTesting, setGraphTesting] = useState(false);
+  const [graphResult, setGraphResult] = useState<string | null>(null);
+  const [graphError, setGraphError] = useState<string | null>(null);
+  const [apiBase, setApiBase] = useState('');
 
   const isStarter = plan === 'Starter';
+  const whatsappPhoneId = typeof window !== 'undefined' ? (localStorage.getItem('mb_whatsapp_phone') || sessionStorage.getItem('mb_whatsapp_phone') || '') : '';
+  const socialConfigs = typeof window !== 'undefined' ? (sessionStorage.getItem('mb_social_configs') || '') : '';
+
+  useEffect(() => {
+    fetch('/api/health')
+      .then(r => { if (r.ok) setApiBase(''); else setApiBase('http://localhost:3001'); })
+      .catch(() => setApiBase('http://localhost:3001'));
+  }, []);
+
+  const handleWaSend = async () => {
+    setWaSending(true);
+    setWaResult(null);
+    setWaError(null);
+    try {
+      if (!whatsappPhoneId || !waRecipient || !waMessage) {
+        setWaError('Fill phone ID in WhatsApp Connector, recipient, and message');
+        return;
+      }
+      const res = await fetch(`${apiBase}/api/whatsapp/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumberId: whatsappPhoneId, to: waRecipient, text: waMessage })
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        setWaError(typeof body === 'string' ? body : body?.error || 'Send failed');
+      } else {
+        const id = body?.data?.messages?.[0]?.id || 'sent';
+        setWaResult(`Message id: ${id}`);
+      }
+    } catch {
+      setWaError('Network error');
+    } finally {
+      setWaSending(false);
+    }
+  };
+
+  const handleGraphMe = async () => {
+    setGraphTesting(true);
+    setGraphResult(null);
+    setGraphError(null);
+    try {
+      const res = await fetch(`${apiBase}/api/graph/me`, { method: 'POST' });
+      const body = await res.json();
+      if (!res.ok) {
+        setGraphError(typeof body === 'string' ? body : body?.error || 'Test failed');
+      } else {
+        setGraphResult(`Connected as ${body?.name} (${body?.id})`);
+      }
+    } catch {
+      setGraphError('Network error');
+    } finally {
+      setGraphTesting(false);
+    }
+  };
 
   useEffect(() => {
     // Fetch from store
@@ -310,8 +374,8 @@ export const CampaignDetails: React.FC = () => {
             </div>
          </div>
 
-         {/* Sidebar / Settings */}
-         <div className="space-y-6">
+        {/* Sidebar / Settings */}
+        <div className="space-y-6">
             <div className="p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
                <h3 className="font-bold mb-4">Configuration</h3>
                
@@ -403,6 +467,59 @@ export const CampaignDetails: React.FC = () => {
                         </div>
                      </div>
                   </div>
+               </div>
+            </div>
+
+            <div className="p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+               <h3 className="font-bold mb-4">Modules & Integrations</h3>
+               <div className="space-y-6">
+                 <div className="space-y-3">
+                   <div className="flex items-center justify-between">
+                     <div className="text-sm font-semibold">WhatsApp Connector</div>
+                     <span className={`text-xs px-2 py-0.5 rounded ${isStarter ? 'bg-yellow-100 text-yellow-700' : whatsappPhoneId ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>
+                       {isStarter ? 'Locked' : (whatsappPhoneId ? 'Connected' : 'Not Configured')}
+                     </span>
+                   </div>
+                   <div className={`grid gap-2 ${isStarter ? 'opacity-60 pointer-events-none' : ''}`}>
+                     <div className="flex gap-2">
+                       <input 
+                         className="flex-1 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+                         placeholder="Recipient (E.164)"
+                         value={waRecipient}
+                         onChange={(e) => setWaRecipient(e.target.value)}
+                       />
+                       <Button variant="outline" onClick={() => navigate('/dashboard/whatsapp')}>Configure</Button>
+                     </div>
+                     <textarea 
+                       className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 h-20"
+                       placeholder="Message"
+                       value={waMessage}
+                       onChange={(e) => setWaMessage(e.target.value)}
+                     />
+                     <div className="flex items-center gap-3">
+                       <Button onClick={handleWaSend} isLoading={waSending} disabled={!whatsappPhoneId || !waRecipient || !waMessage}>Send Test</Button>
+                       {waResult && <span className="text-xs text-green-600">{waResult}</span>}
+                       {waError && <span className="text-xs text-red-600">{waError}</span>}
+                     </div>
+                   </div>
+                 </div>
+
+                 <hr className="border-slate-100 dark:border-slate-700" />
+
+                 <div className="space-y-3">
+                   <div className="flex items-center justify-between">
+                     <div className="text-sm font-semibold">Social Integrations</div>
+                     <span className={`text-xs px-2 py-0.5 rounded ${isStarter ? 'bg-yellow-100 text-yellow-700' : socialConfigs ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>
+                       {isStarter ? 'Locked' : (socialConfigs ? 'Configured' : 'Not Configured')}
+                     </span>
+                   </div>
+                   <div className={`flex items-center gap-2 ${isStarter ? 'opacity-60 pointer-events-none' : ''}`}>
+                     <Button variant="outline" onClick={() => navigate('/dashboard/integrations')}>Configure</Button>
+                     <Button onClick={handleGraphMe} isLoading={graphTesting}>Test Identity</Button>
+                     {graphResult && <span className="text-xs text-green-600">{graphResult}</span>}
+                     {graphError && <span className="text-xs text-red-600">{graphError}</span>}
+                   </div>
+                 </div>
                </div>
             </div>
 
