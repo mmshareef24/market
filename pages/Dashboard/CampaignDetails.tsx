@@ -485,8 +485,6 @@ export const CampaignDetails: React.FC = () => {
             </div>
 
             <div className="p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
-<<<<<<< Updated upstream
-=======
                <h3 className="font-bold mb-4">Modules & Integrations</h3>
                <div className="space-y-6">
                  <div className="space-y-3">
@@ -505,7 +503,7 @@ export const CampaignDetails: React.FC = () => {
                          onChange={(e) => setWaRecipient(e.target.value)}
                        />
                        <Button variant="outline" onClick={() => navigate('/dashboard/whatsapp')}>Configure</Button>
-                        <Button variant="ghost" onClick={refreshWaStats}>Refresh Status</Button>
+                        <Button variant="ghost" aria-label="Refresh Status" onClick={refreshWaStats}>Refresh Status</Button>
                      </div>
                      <textarea 
                        className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 h-20"
@@ -555,7 +553,6 @@ export const CampaignDetails: React.FC = () => {
             </div>
 
             <div className="p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
->>>>>>> Stashed changes
                <h3 className="font-bold mb-4 text-red-500">Danger Zone</h3>
                <p className="text-xs text-slate-500 mb-4">
                   Deleting a campaign is irreversible. All data associated with this campaign will be permanently removed.
