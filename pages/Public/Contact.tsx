@@ -12,6 +12,9 @@ export const Contact: React.FC = () => {
   });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
+  const CONTACT_EMAIL = (import.meta as any).env?.VITE_CONTACT_EMAIL || '';
+  const WHATSAPP_NUMBER = (import.meta as any).env?.VITE_WHATSAPP_NUMBER || '';
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('submitting');
@@ -25,10 +28,9 @@ export const Contact: React.FC = () => {
   };
 
   const handleWhatsAppClick = () => {
-    // Opens WhatsApp Web with a pre-filled message
-    const phoneNumber = "447424539712"; 
+    if (!WHATSAPP_NUMBER) return;
     const text = encodeURIComponent("Hi MarketBridge Team, I'm interested in your platform.");
-    window.open(`https://wa.me/${phoneNumber}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
   };
 
   return (
@@ -126,19 +128,22 @@ export const Contact: React.FC = () => {
             <div>
               <h3 className="text-xl font-bold mb-6">Contact Information</h3>
               <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600">
-                    <Mail className="w-6 h-6" />
+                {CONTACT_EMAIL && (
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600">
+                      <Mail className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900 dark:text-white">Email Us</h4>
+                      <p className="text-slate-600 dark:text-slate-400">{CONTACT_EMAIL}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-slate-900 dark:text-white">Email Us</h4>
-                    <p className="text-slate-600 dark:text-slate-400">info@matrixinfo.co.uk</p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
             {/* WhatsApp Card */}
+            {WHATSAPP_NUMBER && (
             <div className="p-8 rounded-2xl bg-[#25D366] text-white shadow-lg relative overflow-hidden group hover:shadow-[#25D366]/40 transition-shadow">
                <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
                <div className="relative z-10">
@@ -157,6 +162,7 @@ export const Contact: React.FC = () => {
                  </button>
                </div>
             </div>
+            )}
 
             {/* Map Placeholder */}
             <div className="rounded-2xl overflow-hidden h-64 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 relative flex items-center justify-center">

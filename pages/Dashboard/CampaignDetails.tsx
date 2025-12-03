@@ -23,16 +23,7 @@ import { Campaign, DashboardContext } from '../../types';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { UpgradeModal } from '../../components/UpgradeModal';
 
-// Mock chart data for details view
-const performanceData = [
-  { name: 'Day 1', sent: 1000, read: 800, clicks: 200 },
-  { name: 'Day 2', sent: 2500, read: 1900, clicks: 450 },
-  { name: 'Day 3', sent: 4000, read: 3200, clicks: 900 },
-  { name: 'Day 4', sent: 6000, read: 4500, clicks: 1200 },
-  { name: 'Day 5', sent: 8000, read: 6100, clicks: 1800 },
-  { name: 'Day 6', sent: 10500, read: 7800, clicks: 2400 },
-  { name: 'Day 7', sent: 12500, read: 9800, clicks: 3200 },
-];
+// Time-series performance is not available in LIVE until analytics backend is connected
 
 const PLATFORM_OPTIONS = ['WhatsApp', 'Facebook', 'Email', 'Instagram', 'Multi-Channel'];
 const GOAL_OPTIONS = ['Sales', 'Awareness', 'Engagement', 'Retention'];
@@ -253,41 +244,9 @@ export const CampaignDetails: React.FC = () => {
             <div className="p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
                <div className="flex items-center justify-between mb-6">
                     <h3 className="text-lg font-bold">Performance Over Time</h3>
-                    <div className="flex items-center gap-4 text-xs font-medium">
-                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500" /> Sent</div>
-                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-brand-cyan" /> Read</div>
-                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Clicks</div>
-                    </div>
                </div>
-               <div className="h-[350px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={performanceData}>
-                      <defs>
-                        <linearGradient id="colorSent" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#0066FF" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#0066FF" stopOpacity={0}/>
-                        </linearGradient>
-                        <linearGradient id="colorRead" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#00D4FF" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#00D4FF" stopOpacity={0}/>
-                        </linearGradient>
-                        <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} opacity={0.1} />
-                      <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                      <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                      <Tooltip 
-                          contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }}
-                          itemStyle={{ color: '#fff' }}
-                      />
-                      <Area type="monotone" dataKey="sent" stroke="#0066FF" strokeWidth={2} fillOpacity={1} fill="url(#colorSent)" name="Sent" />
-                      <Area type="monotone" dataKey="read" stroke="#00D4FF" strokeWidth={2} fillOpacity={1} fill="url(#colorRead)" name="Read" />
-                      <Area type="monotone" dataKey="clicks" stroke="#10B981" strokeWidth={2} fillOpacity={1} fill="url(#colorClicks)" name="Clicks" />
-                    </AreaChart>
-                  </ResponsiveContainer>
+               <div className="h-[200px] w-full flex items-center justify-center text-slate-500 dark:text-slate-400 text-sm">
+                  No time-series data available yet. Connect analytics to enable charts.
                </div>
             </div>
 
@@ -392,19 +351,36 @@ export const CampaignDetails: React.FC = () => {
                      <div>
                         <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Target Audience</label>
                         {isEditing ? (
-                            <select 
-                                value={campaign.audienceId || ''}
-                                onChange={(e) => {
-                                    const aud = mockAudiences.find(a => a.id === e.target.value);
-                                    if(aud) setCampaign({...campaign, audienceId: aud.id, audience: aud.name});
-                                }}
-                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm focus:ring-2 focus:ring-brand-cyan outline-none"
-                            >
-                                <option value="" disabled>Select Audience</option>
-                                {mockAudiences.map(a => (
-                                    <option key={a.id} value={a.id}>{a.name}</option>
-                                ))}
-                            </select>
+                            mockAudiences.length > 0 ? (
+                              <select 
+                                  value={campaign.audienceId || ''}
+                                  onChange={(e) => {
+                                      const aud = mockAudiences.find(a => a.id === e.target.value);
+                                      if(aud) setCampaign({...campaign, audienceId: aud.id, audience: aud.name});
+                                  }}
+                                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm focus:ring-2 focus:ring-brand-cyan outline-none"
+                              >
+                                  <option value="" disabled>Select Audience</option>
+                                  {mockAudiences.map(a => (
+                                      <option key={a.id} value={a.id}>{a.name}</option>
+                                  ))}
+                              </select>
+                            ) : (
+                              <div className="grid grid-cols-1 gap-2">
+                                <input 
+                                  value={campaign.audienceId || ''}
+                                  onChange={(e) => setCampaign({...campaign, audienceId: e.target.value})}
+                                  placeholder="Audience Segment ID"
+                                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm focus:ring-2 focus:ring-brand-cyan outline-none"
+                                />
+                                <input 
+                                  value={campaign.audience || ''}
+                                  onChange={(e) => setCampaign({...campaign, audience: e.target.value})}
+                                  placeholder="Audience Name"
+                                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm focus:ring-2 focus:ring-brand-cyan outline-none"
+                                />
+                              </div>
+                            )
                         ) : (
                             <div className="flex items-center gap-2 text-sm font-medium">
                                 <Users className="w-4 h-4 text-slate-400" /> {campaign.audience}

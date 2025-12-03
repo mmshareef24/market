@@ -114,33 +114,50 @@ export const CampaignWizard: React.FC<CampaignWizardProps> = ({
   const renderStep2 = () => (
     <div className="space-y-4 animate-fade-in">
         <h3 className="text-lg font-bold">Target Audience</h3>
-        <p className="text-sm text-slate-500">Select a segment to target.</p>
-        <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-            {mockAudiences.map(audience => (
-                <div 
-                    key={audience.id}
-                    onClick={() => setFormData({...formData, audienceId: audience.id})}
-                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${formData.audienceId === audience.id
-                        ? 'bg-brand-cyan/10 border-brand-cyan'
-                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-brand-cyan/50'}`}
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-full bg-slate-100 dark:bg-slate-700">
-                            <Users className="w-4 h-4 text-slate-500" />
-                        </div>
-                        <div>
-                            <p className="font-medium text-sm">{audience.name}</p>
-                            <div className="flex gap-2 text-xs text-slate-500">
-                                <span>{audience.size.toLocaleString()} contacts</span>
-                                <span>•</span>
-                                <span className="capitalize">{audience.type}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {formData.audienceId === audience.id && <CheckCircle className="w-5 h-5 text-brand-cyan" />}
-                </div>
-            ))}
-        </div>
+        {mockAudiences.length > 0 ? (
+          <>
+            <p className="text-sm text-slate-500">Select a segment to target.</p>
+            <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+              {mockAudiences.map(audience => (
+                  <div 
+                      key={audience.id}
+                      onClick={() => setFormData({...formData, audienceId: audience.id})}
+                      className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${formData.audienceId === audience.id
+                          ? 'bg-brand-cyan/10 border-brand-cyan'
+                          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-brand-cyan/50'}`}
+                  >
+                      <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-full bg-slate-100 dark:bg-slate-700">
+                              <Users className="w-4 h-4 text-slate-500" />
+                          </div>
+                          <div>
+                              <p className="font-medium text-sm">{audience.name}</p>
+                              <div className="flex gap-2 text-xs text-slate-500">
+                                  <span>{audience.size.toLocaleString()} contacts</span>
+                                  <span>•</span>
+                                  <span className="capitalize">{audience.type}</span>
+                              </div>
+                          </div>
+                      </div>
+                      {formData.audienceId === audience.id && <CheckCircle className="w-5 h-5 text-brand-cyan" />}
+                  </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-slate-500">No audience segments available. Enter a target segment ID to continue.</p>
+            <div className="space-y-2">
+              <input 
+                type="text"
+                placeholder="Audience Segment ID"
+                value={formData.audienceId}
+                onChange={(e) => setFormData({ ...formData, audienceId: e.target.value })}
+                className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-brand-cyan"
+              />
+            </div>
+          </>
+        )}
     </div>
   );
 
@@ -213,7 +230,7 @@ export const CampaignWizard: React.FC<CampaignWizardProps> = ({
             </div>
             <div className="flex justify-between">
                 <span className="text-sm text-slate-500">Audience</span>
-                <span className="font-medium">{mockAudiences.find(a => a.id === formData.audienceId)?.name}</span>
+                <span className="font-medium">{mockAudiences.find(a => a.id === formData.audienceId)?.name || formData.audienceId}</span>
             </div>
         </div>
     </div>
