@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Button } from '../../components/Button';
 import { DashboardContext } from '../../types';
-import { getEnvToken, getPhoneNumbers, sendTextMessage } from '../../services/whatsappService';
+import { getEnvToken, getPhoneNumbers, sendTextMessage, sendTemplateMessage } from '../../services/whatsappService';
 import { MessageCircle, Lock, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export const WhatsAppConnector: React.FC = () => {
@@ -19,6 +19,9 @@ export const WhatsAppConnector: React.FC = () => {
   const [testTo, setTestTo] = useState('');
   const [testBody, setTestBody] = useState('Hello from MarketBridge AI');
   const [result, setResult] = useState<string>('');
+  const [templateName, setTemplateName] = useState('');
+  const [templateLang, setTemplateLang] = useState('en');
+  const [templateParams, setTemplateParams] = useState<string>('');
 
   const effectiveToken = tokenInput || getEnvToken();
 
@@ -58,6 +61,40 @@ export const WhatsAppConnector: React.FC = () => {
       setResult(JSON.stringify(resp));
     } catch (e: any) {
       setError(e?.message || 'Failed to send message');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendTemplate = async () => {
+    if (!isAdmin) {
+      alert('Only admins can send template messages');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
+    setResult('');
+    try {
+      let components: Array<{ type: string; parameters?: any[] }> = [];
+      if (templateParams) {
+        try {
+          const arr = JSON.parse(templateParams);
+          if (Array.isArray(arr)) {
+            components = [{ type: 'body', parameters: arr }];
+          }
+        } catch {}
+      }
+      const resp = await sendTemplateMessage(
+        phoneNumberId,
+        testTo,
+        templateName,
+        templateLang,
+        components,
+        effectiveToken
+      );
+      setResult(JSON.stringify(resp));
+    } catch (e: any) {
+      setError(e?.message || 'Failed to send template message');
     } finally {
       setIsLoading(false);
     }
@@ -111,8 +148,8 @@ export const WhatsAppConnector: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-          <h2 className="font-bold">Send Test Message</h2>
+        <div className="p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+          <h2 className="font-bold">Send Messages</h2>
           <div className="space-y-3">
             <input
               value={testTo}
@@ -130,6 +167,31 @@ export const WhatsAppConnector: React.FC = () => {
               Send Test
             </Button>
             {result && (<pre className="text-xs bg-slate-100 dark:bg-slate-900 p-3 rounded overflow-auto max-h-40">{result}</pre>)}
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="font-medium">Send Template Message</h3>
+            <input
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+              placeholder="Template name (e.g., order_update)"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded"
+            />
+            <input
+              value={templateLang}
+              onChange={(e) => setTemplateLang(e.target.value)}
+              placeholder="Language code (e.g., en, en_US)"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded"
+            />
+            <textarea
+              value={templateParams}
+              onChange={(e) => setTemplateParams(e.target.value)}
+              placeholder='Body parameters JSON (e.g., [{"type":"text","text":"John"}])'
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded h-24"
+            />
+            <Button onClick={handleSendTemplate} isLoading={isLoading} disabled={!phoneNumberId || !testTo || !templateName || !templateLang || !effectiveToken}>
+              Send Template
+            </Button>
           </div>
         </div>
       </div>
