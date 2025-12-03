@@ -31,6 +31,7 @@ interface CampaignWizardProps {
   onClose: () => void;
   onComplete: (data: CampaignFormData) => void;
   plan: PlanTier;
+  isAdmin?: boolean;
   initialValues?: Partial<CampaignFormData> | null;
 }
 
@@ -39,6 +40,7 @@ export const CampaignWizard: React.FC<CampaignWizardProps> = ({
   onClose, 
   onComplete, 
   plan, 
+  isAdmin = false,
   initialValues 
 }) => {
   const [step, setStep] = useState(1);
@@ -146,14 +148,14 @@ export const CampaignWizard: React.FC<CampaignWizardProps> = ({
     const channels = [
         { id: 'Email', icon: Mail, color: 'text-blue-500', isLocked: false },
         { id: 'Facebook', icon: Facebook, color: 'text-blue-600', isLocked: false },
-        { id: 'WhatsApp', icon: MessageCircle, color: 'text-green-500', isLocked: plan === 'Starter' },
-        { id: 'Multi-Channel', icon: LayoutGrid, color: 'text-purple-500', isLocked: plan === 'Starter' }
+        { id: 'WhatsApp', icon: MessageCircle, color: 'text-green-500', isLocked: plan === 'Starter' && !isAdmin },
+        { id: 'Multi-Channel', icon: LayoutGrid, color: 'text-purple-500', isLocked: plan === 'Starter' && !isAdmin }
     ];
 
     return (
         <div className="space-y-4 animate-fade-in">
             <h3 className="text-lg font-bold">Select Channel</h3>
-            {plan === 'Starter' && (
+            {plan === 'Starter' && !isAdmin && (
                 <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900 text-sm text-blue-700 dark:text-blue-300 flex gap-2">
                     <Sparkles className="w-4 h-4 mt-0.5" />
                     <span>Upgrade to Growth to unlock WhatsApp & Multi-channel campaigns.</span>

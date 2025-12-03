@@ -14,7 +14,8 @@ import {
   Workflow,
   CheckCircle2,
   Target,
-  Lock
+  Lock,
+  Copy
 } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { campaignStore, mockAudiences } from '../../data/mockData';
@@ -39,7 +40,7 @@ const GOAL_OPTIONS = ['Sales', 'Awareness', 'Engagement', 'Retention'];
 export const CampaignDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { plan } = useOutletContext<DashboardContext>();
+  const { plan, isAdmin } = useOutletContext<DashboardContext>();
   
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -47,7 +48,7 @@ export const CampaignDetails: React.FC = () => {
   const [originalCampaign, setOriginalCampaign] = useState<Campaign | null>(null);
   const [showUpgrade, setShowUpgrade] = useState<{show: boolean, feature: string}>({ show: false, feature: '' });
 
-  const isStarter = plan === 'Starter';
+  const isStarter = plan === 'Starter' && !isAdmin;
 
   useEffect(() => {
     // Fetch from store
@@ -90,6 +91,10 @@ export const CampaignDetails: React.FC = () => {
   };
 
   const handleDelete = () => {
+      if (!isAdmin) {
+          alert('Only admins can delete campaigns');
+          return;
+      }
       if(confirm('Are you sure you want to delete this campaign?')) {
           campaignStore.delete(campaign.id);
           navigate('/dashboard/campaigns');
@@ -111,6 +116,14 @@ export const CampaignDetails: React.FC = () => {
       } else {
            navigate('/dashboard/automation');
       }
+  };
+
+  const handleCopyId = async () => {
+      if (!campaign) return;
+      try {
+          await navigator.clipboard.writeText(campaign.id);
+          alert('Campaign ID copied');
+      } catch {}
   };
 
   const MetricCard = ({ title, value, subtitle, icon: Icon, color }: any) => (
@@ -174,6 +187,9 @@ export const CampaignDetails: React.FC = () => {
             </div>
             <p className="text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2 text-sm">
                ID: {campaign.id} • Last updated just now
+               <button onClick={handleCopyId} className="ml-2 px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs flex items-center gap-1">
+                  <Copy className="w-3 h-3" /> Copy
+               </button>
             </p>
           </div>
         </div>
@@ -411,19 +427,20 @@ export const CampaignDetails: React.FC = () => {
                <p className="text-xs text-slate-500 mb-4">
                   Deleting a campaign is irreversible. All data associated with this campaign will be permanently removed.
                </p>
-               <Button onClick={handleDelete} variant="outline" className="w-full border-red-200 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 dark:border-red-900">
+               <Button onClick={handleDelete} variant="outline" className="w-full border-red-200 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 dark:border-red-900" disabled={!isAdmin}
+               >
                   <Trash2 className="w-4 h-4 mr-2" /> Delete Campaign
                </Button>
             </div>
          </div>
       </div>
 
-      {showUpgrade.show && (
-        <UpgradeModal 
-            feature={showUpgrade.feature} 
-            onClose={() => setShowUpgrade({ show: false, feature: '' })} 
-        />
-      )}
-    </div>
+  {showUpgrade.show && (
+    <UpgradeModal 
+        feature={showUpgrade.feature} 
+        onClose={() => setShowUpgrade({ show: false, feature: '' })} 
+    />
+  )}
+  </div>
   );
 };

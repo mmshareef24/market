@@ -19,6 +19,7 @@ export interface User {
 
 export interface DashboardContext {
   plan: PlanTier;
+  isAdmin: boolean;
 }
 
 export interface CampaignMetrics {

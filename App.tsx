@@ -71,7 +71,7 @@ const App: React.FC = () => {
         {/* Protected Dashboard Routes (User) */}
         <Route 
           path="/dashboard" 
-          element={isAuthenticated && userRole === 'USER' ? <DashboardLayout onLogout={handleLogout} plan={userPlan} /> : <Navigate to="/auth" />}
+          element={isAuthenticated ? <DashboardLayout onLogout={handleLogout} plan={userPlan} isAdmin={userRole === 'ADMIN'} /> : <Navigate to="/auth" />}
         >
           <Route index element={<DashboardOverview />} />
           <Route path="campaigns" element={<Campaigns />} />

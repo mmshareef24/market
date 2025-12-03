@@ -40,10 +40,10 @@ const StatCard = ({ title, value, change, icon: Icon, isLocked, onLockClick }: a
 );
 
 export const DashboardOverview: React.FC = () => {
-  const { plan } = useOutletContext<DashboardContext>();
+  const { plan, isAdmin } = useOutletContext<DashboardContext>();
   const [showUpgrade, setShowUpgrade] = useState<{show: boolean, feature: string}>({ show: false, feature: '' });
 
-  const isStarter = plan === 'Starter';
+  const isStarter = plan === 'Starter' && !isAdmin;
 
   return (
     <div className="space-y-8">

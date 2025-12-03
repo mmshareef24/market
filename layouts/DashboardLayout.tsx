@@ -22,9 +22,10 @@ import { PlanTier } from '../types';
 interface DashboardLayoutProps {
   onLogout: () => void;
   plan: PlanTier;
+  isAdmin?: boolean;
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan }) => {
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan, isAdmin = false }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -103,13 +104,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan
                   <Crown className="w-4 h-4 text-yellow-300" />
                   <p className="text-sm font-bold">{plan} Plan</p>
                 </div>
-                <div className="w-full bg-white/20 rounded-full h-1.5 mb-2">
-                  <div className="bg-white h-1.5 rounded-full w-[70%]"></div>
-                </div>
-                <p className="text-xs text-opacity-80 text-white">
-                    {plan === 'Starter' ? '850 / 1,000 contacts' : '15,000 / 25,000 contacts'}
-                </p>
-                {plan === 'Starter' && (
+                {isAdmin ? (
+                  <div className="mb-2 text-xs">Unlimited contacts</div>
+                ) : (
+                  <>
+                    <div className="w-full bg-white/20 rounded-full h-1.5 mb-2">
+                      <div className="bg-white h-1.5 rounded-full w-[70%]"></div>
+                    </div>
+                    <p className="text-xs text-opacity-80 text-white">
+                        {plan === 'Starter' ? '850 / 1,000 contacts' : '15,000 / 25,000 contacts'}
+                    </p>
+                  </>
+                )}
+                {plan === 'Starter' && !isAdmin && (
                   <button className="mt-3 w-full py-1.5 bg-white text-slate-900 text-xs font-bold rounded shadow-sm hover:bg-slate-100 transition-colors">
                     Upgrade to Growth
                   </button>
@@ -158,7 +165,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout, plan
 
         <div className="p-4 lg:p-8 max-w-7xl mx-auto">
           {/* Pass plan context to child routes */}
-          <Outlet context={{ plan }} />
+          <Outlet context={{ plan, isAdmin }} />
         </div>
       </main>
     </div>
